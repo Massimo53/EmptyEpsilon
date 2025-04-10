@@ -6,6 +6,10 @@
 -- @script scenario_10_empty
 
 function init()
+	ECS = false
+	if createEntity then
+		ECS = true
+	end
     --SpaceStation():setPosition(1000, 1000):setTemplate('Small Station'):setFaction("Human Navy"):setRotation(random(0, 360))
     --SpaceStation():setPosition(-1000, 1000):setTemplate('Medium Station'):setFaction("Human Navy"):setRotation(random(0, 360))
     --SpaceStation():setPosition(1000, -1000):setTemplate('Large Station'):setFaction("Human Navy"):setRotation(random(0, 360))
@@ -63,12 +67,78 @@ function init()
         end
     )
 end
-
+function isObjectType(obj,typ,qualifier)
+	if obj ~= nil and obj:isValid() then
+		if typ ~= nil then
+			if ECS then
+				if typ == "SpaceStation" then
+					return obj.components.docking_bay and obj.components.physics and obj.components.physics.type == "static"
+				elseif typ == "PlayerSpaceship" then
+					return obj.components.player_control
+				elseif typ == "ScanProbe" then
+					return obj.components.allow_radar_link
+				elseif typ == "CpuShip" then
+					return obj.ai_controller
+				elseif typ == "Asteroid" then
+					return obj.components.mesh_render and string.sub(obj.components.mesh_render.mesh, 7) == "Astroid"
+				elseif typ == "Nebula" then
+					return obj.components.nebula_renderer
+				elseif typ == "Planet" then
+					return obj.components.planet_render
+				elseif typ == "SupplyDrop" then
+					return obj.components.pickup and obj.components.radar_trace.icon == "radar/blip.png" and obj.components.radar_trace.color_by_faction
+				elseif typ == "BlackHole" then
+					return obj.components.gravity and obj.components.billboard_render.texture == "blackHole3d.png"
+				elseif typ == "WarpJammer" then
+					return obj.components.warp_jammer
+				elseif typ == "Mine" then
+					return obj.components.delayed_explode_on_touch and obj.components.constant_particle_emitter
+				elseif typ == "EMPMissile" then
+					return obj.components.radar_trace.icon == "radar/missile.png" and obj.components.explode_on_touch.damage_type == "emp"
+				elseif typ == "Nuke" then
+					return obj.components.radar_trace.icon == "radar/missile.png" and obj.components.explosion_sfx == "sfx/nuke_explosion.wav"
+				elseif typ == "Zone" then
+					return obj.components.zone
+				else
+					if qualifier == "MovingMissile" then
+						if typ == "HomingMissile" or typ == "HVLI" or typ == "Nuke" or typ == "EMPMissile" then
+							return obj.components.radar_trace.icon == "radar/missile.png"
+						else
+							return false
+						end
+					elseif qualifier == "SplashMissile" then
+						if typ == "Nuke" or typ == "EMPMissile" then
+							if obj.components.radar_trace.icon == "radar/missile.png" then
+								if typ == "Nuke" then
+									return obj.components.explosion_sfx == "sfx/nuke_explosion.wav"
+								else	--EMP
+									return obj.components.explode_on_touch.damage_type == "emp"
+								end
+							else
+								return false
+							end
+						else
+							return false
+						end
+					else
+						return false
+					end
+				end
+			else
+				return obj.typeName == typ
+			end
+		else
+			return false
+		end
+	else
+		return false
+	end
+end
 function cleanup()
     -- Clean up the current play field. Find all objects and destroy everything that is not a player.
     -- If it is a player, position him in the center of the scenario.
     for idx, obj in ipairs(getAllObjects()) do
-        if obj.typeName == "PlayerSpaceship" then
+        if isObjectType(obj,"PlayerSpaceship") then
             obj:setPosition(random(-100, 100), random(-100, 100))
         else
             obj:destroy()
@@ -84,7 +154,11 @@ end
 onNewPlayerShip(
     function(ship)
         -- Decide what you do with new ships:
-        print(ship, ship.typeName, ship:getTypeName(), ship:getCallSign())
+        if ECS then
+        	print(ship, ship:getTypeName(), ship:getCallSign())
+        else
+	        print(ship, ship.typeName, ship:getTypeName(), ship:getCallSign())
+	    end
         -- ship:destroy()
     end
 )

@@ -1,7 +1,6 @@
 #include <i18n.h>
 #include "hotkeyConfig.h"
 #include "preferenceManager.h"
-#include "shipTemplate.h"
 
 Keys keys;
 extern sp::io::Keybinding fullscreen_key;
@@ -211,24 +210,25 @@ Keys::Keys() :
 
     //Science
     science_scan_object("SCIENCE_SCAN_OBJECT", "S"),
+    science_scan_abort("SCIENCE_SCAN_ABORT", "D"),
     science_select_next_scannable("SCIENCE_SELECT_NEXT_SCANNABLE", "C"),
     science_scan_param_increase{{
-        {"SIENCE_SCAN_PARAM_INCREASE_1"},
-        {"SIENCE_SCAN_PARAM_INCREASE_2"},
-        {"SIENCE_SCAN_PARAM_INCREASE_3"},
-        {"SIENCE_SCAN_PARAM_INCREASE_4"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_1"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_2"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_3"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_4"},
     }},
     science_scan_param_decrease{{
-        {"SIENCE_SCAN_PARAM_DECREASE_1"},
-        {"SIENCE_SCAN_PARAM_DECREASE_2"},
-        {"SIENCE_SCAN_PARAM_DECREASE_3"},
-        {"SIENCE_SCAN_PARAM_DECREASE_4"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_1"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_2"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_3"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_4"},
     }},
     science_scan_param_set{{
-        {"SIENCE_SCAN_PARAM_SET_1"},
-        {"SIENCE_SCAN_PARAM_SET_2"},
-        {"SIENCE_SCAN_PARAM_SET_3"},
-        {"SIENCE_SCAN_PARAM_SET_4"},
+        {"SCIENCE_SCAN_PARAM_SET_1"},
+        {"SCIENCE_SCAN_PARAM_SET_2"},
+        {"SCIENCE_SCAN_PARAM_SET_3"},
+        {"SCIENCE_SCAN_PARAM_SET_4"},
     }},
 
     //Engineering
@@ -395,6 +395,7 @@ void Keys::init()
 
     //Science
     science_scan_object.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Scan object"));
+    science_scan_abort.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Abort scan"));
     science_select_next_scannable.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Select next scannable object"));
     for(auto n = 0u; n < science_scan_param_increase.size(); n++)
     {
@@ -404,15 +405,15 @@ void Keys::init()
     }
 
     //Engineering
-    engineering_select_system[SYS_Reactor].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select reactor system"));
-    engineering_select_system[SYS_BeamWeapons].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select beam weapon system"));
-    engineering_select_system[SYS_MissileSystem].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select missile weapon system"));
-    engineering_select_system[SYS_Maneuver].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select maneuvering system"));
-    engineering_select_system[SYS_Impulse].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select impulse system"));
-    engineering_select_system[SYS_Warp].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select warp system"));
-    engineering_select_system[SYS_JumpDrive].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select jump drive system"));
-    engineering_select_system[SYS_FrontShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select front shields system"));
-    engineering_select_system[SYS_RearShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select rear shields system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::Reactor)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select reactor system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::BeamWeapons)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select beam weapon system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::MissileSystem)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select missile weapon system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::Maneuver)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select maneuvering system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::Impulse)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select impulse system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::Warp)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select warp system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::JumpDrive)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select jump drive system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::FrontShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select front shields system"));
+    engineering_select_system[static_cast<int>(ShipSystem::Type::RearShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Select rear shields system"));
     engineering_set_power_000.setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set system power to 0%"));
     engineering_set_power_030.setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set system power to 30%"));
     engineering_set_power_050.setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set system power to 50%"));
@@ -436,25 +437,25 @@ void Keys::init()
     engineering_self_destruct_confirm.setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Confirm self-destruct"));
     engineering_self_destruct_cancel.setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Cancel self-destruct"));
 
-    engineering_set_power_for_system[SYS_Reactor].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set reactor power (joystick)"));
-    engineering_set_power_for_system[SYS_BeamWeapons].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set beam weapon power (joystick)"));
-    engineering_set_power_for_system[SYS_MissileSystem].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set missile weapon power (joystick)"));
-    engineering_set_power_for_system[SYS_Maneuver].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set maneuvering power (joystick)"));
-    engineering_set_power_for_system[SYS_Impulse].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set impulse power (joystick)"));
-    engineering_set_power_for_system[SYS_Warp].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set warp power (joystick)"));
-    engineering_set_power_for_system[SYS_JumpDrive].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set jump drive power (joystick)"));
-    engineering_set_power_for_system[SYS_FrontShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set front shields power (joystick)"));
-    engineering_set_power_for_system[SYS_RearShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set rear shields power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::Reactor)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set reactor power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::BeamWeapons)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set beam weapon power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::MissileSystem)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set missile weapon power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::Maneuver)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set maneuvering power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::Impulse)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set impulse power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::Warp)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set warp power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::JumpDrive)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set jump drive power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::FrontShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set front shields power (joystick)"));
+    engineering_set_power_for_system[static_cast<int>(ShipSystem::Type::RearShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set rear shields power (joystick)"));
 
-    engineering_set_coolant_for_system[SYS_Reactor].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set reactor coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_BeamWeapons].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set beam weapon coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_MissileSystem].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set missile weapon coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_Maneuver].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set maneuvering coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_Impulse].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set impulse coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_Warp].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set warp coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_JumpDrive].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set jump drive coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_FrontShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set front shields coolant (joystick)"));
-    engineering_set_coolant_for_system[SYS_RearShield].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set rear shields coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::Reactor)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set reactor coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::BeamWeapons)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set beam weapon coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::MissileSystem)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set missile weapon coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::Maneuver)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set maneuvering coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::Impulse)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set impulse coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::Warp)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set warp coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::JumpDrive)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set jump drive coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::FrontShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set front shields coolant (joystick)"));
+    engineering_set_coolant_for_system[static_cast<int>(ShipSystem::Type::RearShield)].setLabel(tr("hotkey_menu", "Engineering"), tr("hotkey_Engineering", "Set rear shields coolant (joystick)"));
 
     relay_alert_level_none.setLabel(tr("hotkey_menu", "Relay"), tr("hotkey_Relay", "Alert level: Normal"));
     relay_alert_level_yellow.setLabel(tr("hotkey_menu", "Relay"), tr("hotkey_Relay", "Alert level: Yellow"));
