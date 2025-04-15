@@ -210,24 +210,25 @@ Keys::Keys() :
 
     //Science
     science_scan_object("SCIENCE_SCAN_OBJECT", "S"),
+    science_scan_abort("SCIENCE_SCAN_ABORT", "D"),
     science_select_next_scannable("SCIENCE_SELECT_NEXT_SCANNABLE", "C"),
     science_scan_param_increase{{
-        {"SIENCE_SCAN_PARAM_INCREASE_1"},
-        {"SIENCE_SCAN_PARAM_INCREASE_2"},
-        {"SIENCE_SCAN_PARAM_INCREASE_3"},
-        {"SIENCE_SCAN_PARAM_INCREASE_4"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_1"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_2"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_3"},
+        {"SCIENCE_SCAN_PARAM_INCREASE_4"},
     }},
     science_scan_param_decrease{{
-        {"SIENCE_SCAN_PARAM_DECREASE_1"},
-        {"SIENCE_SCAN_PARAM_DECREASE_2"},
-        {"SIENCE_SCAN_PARAM_DECREASE_3"},
-        {"SIENCE_SCAN_PARAM_DECREASE_4"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_1"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_2"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_3"},
+        {"SCIENCE_SCAN_PARAM_DECREASE_4"},
     }},
     science_scan_param_set{{
-        {"SIENCE_SCAN_PARAM_SET_1"},
-        {"SIENCE_SCAN_PARAM_SET_2"},
-        {"SIENCE_SCAN_PARAM_SET_3"},
-        {"SIENCE_SCAN_PARAM_SET_4"},
+        {"SCIENCE_SCAN_PARAM_SET_1"},
+        {"SCIENCE_SCAN_PARAM_SET_2"},
+        {"SCIENCE_SCAN_PARAM_SET_3"},
+        {"SCIENCE_SCAN_PARAM_SET_4"},
     }},
 
     //Engineering
@@ -394,6 +395,7 @@ void Keys::init()
 
     //Science
     science_scan_object.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Scan object"));
+    science_scan_abort.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Abort scan"));
     science_select_next_scannable.setLabel(tr("hotkey_menu", "Science"), tr("hotkey_Science", "Select next scannable object"));
     for(auto n = 0u; n < science_scan_param_increase.size(); n++)
     {
