@@ -107,7 +107,7 @@ if(WITH_DISCORD)
 endif()
 
 # Meshoptimizer
-set(MESHOPTIMIZER_VERSION 0.16)
+set(MESHOPTIMIZER_VERSION 0.23)
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.11)
   include(FetchContent)
   FetchContent_Declare(
@@ -231,6 +231,7 @@ set(MAIN_SOURCES
     src/gameGlobalInfo.cpp
     src/GMActions.cpp
     src/script.cpp
+    src/crewPosition.cpp
     src/playerInfo.cpp
     src/gameStateLogger.cpp
     src/missileWeaponData.cpp
