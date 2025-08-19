@@ -36,6 +36,7 @@
 #include "systems/missilesystem.h"
 #include "systems/docking.h"
 #include "systems/selfdestruct.h"
+#include "systems/radarblock.h"
 #include "math/centerOfMass.h"
 
 
@@ -361,6 +362,11 @@ static bool luaIsInsideZone(float x, float y, sp::ecs::Entity e)
 static void luaSetBanner(string banner)
 {
     gameGlobalInfo->banner_string = banner;
+}
+
+static void luaSetDefaultSkybox(string skybox)
+{
+    gameGlobalInfo->default_skybox = skybox;
 }
 
 static float luaGetScenarioTime()
@@ -844,6 +850,11 @@ void luaCommandJump(sp::ecs::Entity ship, float distance) {
     JumpSystem::initializeJump(ship, distance);
 }
 
+void luaCommandAbortJump(sp::ecs::Entity ship) {
+    if (my_player_info && my_player_info->ship == ship) { my_player_info->commandAbortJump(); return; }
+    JumpSystem::abortJump(ship);
+}
+
 void luaCommandSetTarget(sp::ecs::Entity ship, sp::ecs::Entity target) {
     if (my_player_info && my_player_info->ship == ship) { my_player_info->commandSetTarget(target); return; }
     ship.getOrAddComponent<Target>().entity = target;
@@ -1131,6 +1142,10 @@ bool setupScriptEnvironment(sp::script::Environment& env)
     /// Displays a scrolling banner containing the given text on the cinematic and top-down views.
     /// Example: setBanner("You will soon die!")
     env.setGlobal("setBanner", &luaSetBanner);
+    /// void setDefaultSkybox(string skybox)
+    /// Sets the default skybox to show, "default" is the default skybox. See resources/skybox for other options.
+    /// Example: setDefaultSkybox("You will soon die!")
+    env.setGlobal("setDefaultSkybox", &luaSetDefaultSkybox);
     /// float getScenarioTime()
     /// Returns the elapsed time of the scenario, in seconds.
     /// This timer stops when the game is paused.
@@ -1201,6 +1216,7 @@ bool setupScriptEnvironment(sp::script::Environment& env)
     env.setGlobal("commandImpulse", &luaCommandImpulse);
     env.setGlobal("commandWarp", &luaCommandWarp);
     env.setGlobal("commandJump", &luaCommandJump);
+    env.setGlobal("commandAbortJump", &luaCommandAbortJump);
     env.setGlobal("commandSetTarget", &luaCommandSetTarget);
     env.setGlobal("commandLoadTube", &luaCommandLoadTube);
     env.setGlobal("commandUnloadTube", &luaCommandUnloadTube);
@@ -1242,6 +1258,9 @@ bool setupScriptEnvironment(sp::script::Environment& env)
     env.setGlobal("setPlayerShipCustomFunction", &luaSetPlayerShipCustomFunction);
     env.setGlobal("removePlayerShipCustomFunction", &luaRemovePlayerShipCustomFunction);
     env.setGlobal("addEntryToShipsLog", &luaAddEntryToShipsLog);
+
+    env.setGlobal("isRadarBlockedFrom", &RadarBlockSystem::isRadarBlockedFrom);
+    env.setGlobal("beamVsShieldFrequencyDamageFactor", &frequencyVsFrequencyDamageFactor);
 
     /// EScanningComplexity getScanningComplexity()
     /// Returns the running scenario's scanning complexity setting.

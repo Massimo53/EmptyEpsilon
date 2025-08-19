@@ -146,7 +146,6 @@ void MissileSystem::collision(sp::ecs::Entity a, sp::ecs::Entity b, float force)
     if (eot->owner == b) return;
     auto hull = b.getComponent<Hull>();
     if (!hull) return;
-    if (!(hull->damaged_by_flags & (1 << int(eot->damage_type)))) return;
 
     explode(a, b, *eot);
 }
@@ -348,7 +347,7 @@ void MissileSystem::spawnProjectile(sp::ecs::Entity source, MissileTubes::MountP
         }
 
         if (tube.type_loaded != MW_Mine)
-            missile.addComponent<LifeTime>().lifetime = mwd.lifetime / category_modifier;
+            missile.addComponent<LifeTime>().lifetime = mwd.lifetime * category_modifier;
 
         if (tube.type_loaded != MW_Mine) {
             auto& dbad = missile.addComponent<DestroyedByAreaDamage>();

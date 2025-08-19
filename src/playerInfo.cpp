@@ -103,6 +103,7 @@ static const uint16_t CMD_HACKING_FINISHED = 0x0028;
 static const uint16_t CMD_CUSTOM_FUNCTION = 0x0029;
 static const uint16_t CMD_TURN_SPEED = 0x002A;
 static const uint16_t CMD_CREW_SET_TARGET = 0x002B;
+static const uint16_t CMD_ABORT_JUMP = 0x002C;
 
 //Pre-ship commands
 static const uint16_t CMD_UPDATE_CREW_POSITION = 0x0101;
@@ -192,6 +193,13 @@ void PlayerInfo::commandJump(float distance)
 {
     sp::io::DataBuffer packet;
     packet << CMD_JUMP << distance;
+    sendClientCommand(packet);
+}
+
+void PlayerInfo::commandAbortJump()
+{
+    sp::io::DataBuffer packet;
+    packet << CMD_ABORT_JUMP;
     sendClientCommand(packet);
 }
 
@@ -619,6 +627,9 @@ void PlayerInfo::onReceiveClientCommand(int32_t client_id, sp::io::DataBuffer& p
             JumpSystem::initializeJump(ship, distance);
         }
         break;
+    case CMD_ABORT_JUMP:
+        JumpSystem::abortJump(ship);
+        break;
     case CMD_SET_TARGET:
         {
             sp::ecs::Entity target;
@@ -807,7 +818,7 @@ void PlayerInfo::onReceiveClientCommand(int32_t client_id, sp::io::DataBuffer& p
             packet >> system;
             auto beamweapons = ship.getComponent<BeamWeaponSys>();
             if (beamweapons)
-                beamweapons->system_target = (ShipSystem::Type)std::clamp((int)system, 0, (int)(ShipSystem::COUNT - 1));
+                beamweapons->system_target = (ShipSystem::Type)std::clamp((int)system, -1, (int)(ShipSystem::COUNT - 1));
         }
         break;
     case CMD_SET_SHIELD_FREQUENCY:

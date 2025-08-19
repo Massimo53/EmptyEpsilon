@@ -24,7 +24,13 @@ GuiJumpControls::GuiJumpControls(GuiContainer* owner, string id)
     label->setTextSize(30)->setPosition(50, -50, sp::Alignment::BottomLeft)->setSize(40, GuiElement::GuiSizeMax);
 
     button = new GuiButton(this, id + "_BUTTON", tr("jumpcontrol", "Jump"), [this]() {
-        my_player_info->commandJump(slider->getValue());
+        auto jump = my_spaceship.getComponent<JumpDrive>();
+        if (!jump)
+            return;
+        else if (jump->delay <= 0.0f)
+            my_player_info->commandJump(slider->getValue());
+        else
+            my_player_info->commandAbortJump();
     });
     button->setPosition(0, 0, sp::Alignment::BottomLeft)->setSize(GuiElement::GuiSizeMax, 50);
 
@@ -40,21 +46,27 @@ void GuiJumpControls::onDraw(sp::RenderTarget& target)
             label->setKey("");
             label->setValue("");
             slider->disable();
-            button->disable();
+            button->setText(tr("jumpcontrol", "Jump"))->setStyle("button")->disable();
             charge_bar->hide();
-        } else if (jump->delay > 0.0f)
+        }else if (jump->delay > 0.0f)
         {
-            label->setKey(tr("jumpcontrol","Jump in"));
-            label->setValue(string(int(ceilf(jump->delay))));
+            label->setKey(tr("jumpcontrol", "Jump in"));
+            if (jump->get_seconds_to_jump() == std::numeric_limits<int>::max()) {
+                // TRANSLATORS: Treat "Jump delayed" in jump control as one phrase.
+                label->setKey(tr("jumpcontrol", "Jump"));
+                label->setValue(tr("jumpcontrol", "delayed"));
+            }else
+                label->setValue(tr("jumpcontrol", "{delay} sec.").format({{"delay", string(jump->get_seconds_to_jump())}}));
+
             slider->disable();
-            button->disable();
+            button->setText(tr("jumpcontrol", "Abort"))->setStyle("button.jump_abort")->enable();
             charge_bar->hide();
         }else if (jump->charge < jump->max_distance)
         {
             label->setKey(tr("jumpcontrol", "Charging"));
             label->setValue("...");
             slider->hide();
-            button->disable();
+            button->setText(tr("jumpcontrol", "Jump"))->setStyle("button")->disable();
             charge_bar->setRange(0.0, jump->max_distance);
             charge_bar->setValue(jump->charge)->show();
         }else{
@@ -62,7 +74,7 @@ void GuiJumpControls::onDraw(sp::RenderTarget& target)
             label->setValue(string(slider->getValue() / 1000.0f, 1) + DISTANCE_UNIT_1K);
             slider->enable()->show();
             slider->setRange(jump->max_distance, jump->min_distance);
-            button->enable();
+            button->setText(tr("jumpcontrol", "Jump"))->setStyle("button")->enable();
             charge_bar->hide();
         }
     }

@@ -294,6 +294,10 @@ void initComponentScriptBindings()
     sp::script::ComponentHandler<AvoidObject>::name("avoid_object");
     BIND_MEMBER(AvoidObject, range);
 
+    sp::script::ComponentHandler<DelayedAvoidObject>::name("delayed_avoid_object");
+    BIND_MEMBER(DelayedAvoidObject, delay);
+    BIND_MEMBER(DelayedAvoidObject, range);
+
     sp::script::ComponentHandler<ExplodeOnTouch>::name("explode_on_touch");
     BIND_MEMBER(ExplodeOnTouch, damage_at_center);
     BIND_MEMBER(ExplodeOnTouch, damage_at_edge);
@@ -311,6 +315,11 @@ void initComponentScriptBindings()
     BIND_MEMBER(DelayedExplodeOnTouch, owner);
     BIND_MEMBER(DelayedExplodeOnTouch, damage_type);
     BIND_MEMBER(DelayedExplodeOnTouch, explosion_sfx);
+
+    sp::script::ComponentHandler<ExplosionEffect>::name("explosion_effect");
+    BIND_MEMBER(ExplosionEffect, size);
+    BIND_MEMBER(ExplosionEffect, radar);
+    BIND_MEMBER(ExplosionEffect, electrical);
 
     sp::script::ComponentHandler<CallSign>::name("callsign");
     BIND_MEMBER(CallSign, callsign);
@@ -746,6 +755,8 @@ void initComponentScriptBindings()
     sp::script::ComponentHandler<Zone>::name("zone");
     BIND_MEMBER(Zone, color);
     BIND_MEMBER(Zone, label);
+    BIND_MEMBER(Zone, skybox);
+    BIND_MEMBER(Zone, skybox_fade_distance);
     sp::script::ComponentHandler<Zone>::members["points"] = {
         [](lua_State* L, const void* ptr) {
             auto zone = reinterpret_cast<const Zone*>(ptr);

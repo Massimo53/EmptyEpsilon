@@ -65,6 +65,12 @@ void GuiCanvas::onPointerUp(glm::vec2 position, sp::io::Pointer::ID id)
     }
 }
 
+void GuiCanvas::onMouseWheelScroll(glm::vec2 position, float value)
+{
+    mouse_position = position;
+    executeScrollOnElement(position, value);
+}
+
 void GuiCanvas::onTextInput(const string& text)
 {
     if (focus_element)
@@ -98,6 +104,10 @@ void GuiCanvas::onTextInput(sp::TextInputEvent e)
         FILE* f = fopen("ui.html", "wb");
         dumpGuiTree(f, this);
         fclose(f);
+    }
+
+    if (e == sp::TextInputEvent::Copy) {
+        enable_debug_rendering = !enable_debug_rendering;
     }
 #endif
     if (focus_element)

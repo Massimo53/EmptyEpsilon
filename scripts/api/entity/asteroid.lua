@@ -25,6 +25,7 @@ function Asteroid()
         radar_trace = {
             icon="radar/blip.png",
             radius=size,
+            min_size = 4.0,
             color={255, 200, 100, 255},
             rotate=false,
         },
@@ -61,11 +62,16 @@ local Entity = getLuaEntityFunctionTable()
 --- Sets this Asteroid's radius.
 --- Defaults to a random value between 110 and 130.
 --- Example: asteroid:setSize(150)
+--- Sets the ExplosionEffect's radius.
+--- Defaults to 1.0.
+--- Example: explosion:setSize(1000) -- sets the explosion radius to 1U
 function Entity:setSize(radius)
     local comp = self.components
     if comp.physics then comp.physics.size=radius end
     if comp.mesh_render then comp.mesh_render.scale=radius end
     if comp.avoid_object then comp.avoid_object.range=radius*2 end
+    if comp.explosion_effect then comp.explosion_effect.size=radius end
+    if comp.explode_on_touch then comp.explode_on_touch.blast_range=radius end
     return self
 end
 --- Returns this Asteroid's radius.

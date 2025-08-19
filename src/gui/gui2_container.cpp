@@ -50,7 +50,7 @@ void GuiContainer::drawDebugElements(sp::Rect parent_rect, sp::RenderTarget& ren
         if (element->visible)
         {
             renderer.fillRect(element->rect, glm::u8vec4(255, 255, 255, 5));
-            //TODO_GFX: renderer.outlineRect(element->rect, glm::u8vec4(255, 0, 255, 255));
+            renderer.outlineRect(element->rect, glm::u8vec4(255, 0, 255, 255));
 
             element->drawDebugElements(element->rect, renderer);
 
@@ -74,6 +74,24 @@ GuiElement* GuiContainer::getClickElement(sp::io::Pointer::Button button, glm::v
             {
                 return element;
             }
+        }
+    }
+    return nullptr;
+}
+
+GuiElement* GuiContainer::executeScrollOnElement(glm::vec2 position, float value)
+{
+    for(auto it = children.rbegin(); it != children.rend(); it++)
+    {
+        GuiElement* element = *it;
+
+        if (element->visible && element->enabled && element->rect.contains(position))
+        {
+            GuiElement* scrolled = element->executeScrollOnElement(position, value);
+            if (scrolled)
+                return scrolled;
+            if (element->onMouseWheelScroll(position, value))
+                return element;
         }
     }
     return nullptr;

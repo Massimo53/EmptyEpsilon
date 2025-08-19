@@ -3,7 +3,7 @@
 
 
 GuiScrollText::GuiScrollText(GuiContainer* owner, string id, string text)
-: GuiElement(owner, id), text(text), text_size(30)
+: GuiElement(owner, id), text(text), text_size(30), mouse_scroll_steps(25)
 {
     auto_scroll_down = false;
     scrollbar = new GuiScrollbar(this, id + "_SCROLL", 0, 1, 0, nullptr);
@@ -57,6 +57,12 @@ void GuiScrollText::onDraw(sp::RenderTarget& renderer)
     }
 }
 
+bool GuiScrollText::onMouseWheelScroll(glm::vec2 position, float value)
+{
+    float range = scrollbar->getCorrectedMax() - scrollbar->getMin();
+    scrollbar->setValue((scrollbar->getValue() - value * range / mouse_scroll_steps) );
+    return true;
+}
 
 GuiScrollFormattedText::GuiScrollFormattedText(GuiContainer* owner, string id, string text)
 : GuiScrollText(owner, id, text)
@@ -101,9 +107,11 @@ void GuiScrollFormattedText::onDraw(sp::RenderTarget& renderer)
             } else {
                 last_end = tag_start;
             }
+        } else {
+            last_end = tag_start;
         }
     }
-    prepared.append(text.substr(last_end), text_size, current_color);
+    prepared.append(text.substr(last_end), text_size * size_mod, current_color);
     prepared.finish();
     auto text_draw_size = prepared.getUsedAreaSize();
 
@@ -129,4 +137,9 @@ void GuiScrollFormattedText::onDraw(sp::RenderTarget& renderer)
         scrollbar->show();
         renderer.drawText(text_rect, prepared, sp::Font::FlagClip | sp::Font::FlagLineWrap);
     }
+}
+
+bool GuiScrollFormattedText::onMouseWheelScroll(glm::vec2 position, float value)
+{
+    return GuiScrollText::onMouseWheelScroll(position, value);
 }

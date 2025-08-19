@@ -1,4 +1,4 @@
--- Name: Shoreline Version 2
+-- Name: Shoreline
 -- Description: Waves of increasingly difficult enemies. Warp capable ship is strongly suggested. At least one required mission and several optional missions. Missions selected at random unless game master intervenes
 ---
 --- Maximum of 8 player ships supported by scenario. More player ships may experience strange results
@@ -205,10 +205,10 @@ end
 --	Initialization  --
 ----------------------
 function init()
-	scenario_version = "2.0.3"
+	scenario_version = "2.0.4"
 	print(string.format("     -----     Scenario: Shoreline     -----     Version %s     -----",scenario_version))
 	if _VERSION ~= nil then
-		print("Lue version:",_VERSION)
+		print("Lua version:",_VERSION)
 	end
 	diagnostic = false
 	game_end_statistics_diagnostic = false
@@ -440,6 +440,9 @@ function setPlayers()
 		if pobj ~= nil and pobj:isValid() then
 			if goods[pobj] == nil then
 				goods[pobj] = goodsList
+			end
+			if pobj.goods == nil then
+				pobj.goods = {}
 			end
 			if pobj.initialRep == nil then
 				pobj:addReputationPoints(100-(difficulty*6))
@@ -6559,7 +6562,7 @@ function setStations()
 	table.insert(transport_station_list,stationOutpost33)
 	neutralStations = neutralStations + 1
 	psx = random(-60000,-30000)
-	psy = random(612500,70000)
+	psy = random(61250,70000)
 	placeLando()
 	table.insert(place_space,{obj=stationLando,dist=station_dist[stationLando:getTypeName()],shape="circle"})
 	table.insert(stationList,stationLando)
@@ -6681,7 +6684,7 @@ function setStations()
 	art3 = Artifact():setModel("artifact6"):allowPickup(false):setScanningParameters(3,2):setRadarSignatureInfo(random(7,13),random(4,20), random(2,12))
 	art1:setPosition(random(-50000,50000),random(-80000,-70000))
 	art2:setPosition(random(-90000,-75000),random(-40000,-20000))
-	art3:setPosition(random(50000,75000),random(625000,80000))
+	art3:setPosition(random(50000,75000),random(62500,80000))
 	table.insert(place_space,{obj=art1,dist=300,shape="circle"})
 	table.insert(place_space,{obj=art2,dist=300,shape="circle"})
 	table.insert(place_space,{obj=art3,dist=300,shape="circle"})
@@ -7410,6 +7413,9 @@ function handleDockedState()
 				end)
 			end
 			if ctd.buy ~= nil then
+				if comms_source.goods == nil then
+					comms_source.goods = {}
+				end
 				for good, price in pairs(ctd.buy) do
 					if comms_source.goods[good] ~= nil and comms_source.goods[good] > 0 then
 						addCommsReply(string.format(_("trade-comms", "Sell one %s for %i reputation"),good,price), function()
@@ -8662,7 +8668,7 @@ function altFriendlyShipComms()
 			addCommsReply(_("Back"), altShipComms)
 		end)
 		for idx, obj in ipairs(comms_target:getObjectsInRange(5000)) do
-			if obj.typeName == "SpaceStation" and not comms_target:isEnemy(obj) then
+			if isObjectType(obj,"SpaceStation") and not comms_target:isEnemy(obj) then
 				addCommsReply(string.format(_("shipAssist-comms", "Dock at %s"), obj:getCallSign()), function()
 					setCommsMessage(string.format(_("shipAssist-comms", "Docking at %s."), obj:getCallSign()));
 					local p = getPlayerShip(-1)
@@ -9126,7 +9132,7 @@ function friendlyComms(comms_data)
 			addCommsReply(_("Back"), altShipComms)
 		end)
 		for idx, obj in ipairs(comms_target:getObjectsInRange(5000)) do
-			if obj.typeName == "SpaceStation" and not comms_target:isEnemy(obj) then
+			if isObjectType(obj,"SpaceStation") and not comms_target:isEnemy(obj) then
 				addCommsReply(string.format(_("shipAssist-comms", "Dock at %s"), obj:getCallSign()), function()
 					setCommsMessage(string.format(_("shipAssist-comms", "Docking at %s."), obj:getCallSign()));
 					local p = getPlayerShip(-1)
@@ -9755,7 +9761,7 @@ function waveNear(enemyWaveList)
 				local closestStation = nil
 				for idx2, obj in ipairs(enemy:getObjectsInRange(30000)) do
 					if obj ~= nil and obj:isValid() then
-						if obj.typeName == "SpaceStation" then
+						if isObjectType(obj,"SpaceStation") then
 							if obj:getFaction() == "Human Navy" or obj:getFaction() == "Independent" then
 								if obj == nil then print("obj is nil") end
 								if enemy == nil then print("enemy 3 is nil") end

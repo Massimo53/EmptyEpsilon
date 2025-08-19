@@ -7,13 +7,20 @@ __default_player_ship_faction = "Human Navy"
 --- @type creation
 function PlayerSpaceship()
     local e = createEntity()
+
+    -- player ships default to fully scanned
+    local scan_state = {allow_simple_scan = true}
+    for idx, faction in ipairs(getEntitiesWithComponent("faction_info")) do
+        table.insert(scan_state, {faction = faction, state = "fullscan"})
+    end
+
     e.components = {
         player_control = {},
         ship_log = {},
         custom_ship_functions = {},
         transform = {rotation=random(0, 360)},
         callsign = {callsign=generateRandomCallSign()},
-        scan_state = {allow_simple_scan=true},
+        scan_state = scan_state,
     }
     e:setFaction(__default_player_ship_faction)
     return e
@@ -354,6 +361,12 @@ end
 --- Example: player:commandJump(25000) -- initiate a 25U jump on the current heading
 function Entity:commandJump(target)
     commandJump(self, target)
+    return self
+end
+--- Commands this PlayerSpaceship to abort a jump in progress.
+--- Example: player:commandAbortJump() -- aborts a jump if in progress
+function Entity:commandAbortJump()
+    commandAbortJump(self)
     return self
 end
 --- Commands this PlayerSpaceship to set its weapons target to the given SpaceObject.
